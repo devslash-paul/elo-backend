@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	restful "github.com/emicklei/go-restful"
-	"github.com/paulthom12345/elo_backend/models"
+	"github.com/paulthom12345/elo-backend/models"
 )
 
 type UserEndpoint struct {

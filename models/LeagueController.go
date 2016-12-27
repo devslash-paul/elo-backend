@@ -29,7 +29,7 @@ func (ct *LeagueController) GetAllLeagues() *[]League {
 }
 
 // GetById will get a league by a specified league id
-func (ct *LeagueController) GetById(id uint64) (*League, error) {
+func (ct *LeagueController) GetById(id uint) (*League, error) {
 	league := League{}
 	ct.db.First(&league, id)
 
@@ -46,4 +46,8 @@ func (ct *LeagueController) GetById(id uint64) (*League, error) {
 func (ct *LeagueController) Create(league *League) error {
 	ct.db.Create(league)
 	return nil
+}
+
+func (ct *LeagueController) GetUserScores(league *League, users []uint) (int, int, error) {
+	return 1, 1, nil
 }

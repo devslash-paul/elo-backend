@@ -1,10 +1,8 @@
 package workers
 
 import (
-	"github.com/paulthom12345/elo_backend/models"
+	"github.com/paulthom12345/elo-backend/models"
 )
-
-type Events []models.Event
 
 // Update the GameEventWorker
 // to the front of the EventQueue

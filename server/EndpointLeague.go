@@ -7,7 +7,7 @@ import (
 
 	restful "github.com/emicklei/go-restful"
 	"github.com/jinzhu/gorm"
-	"github.com/paulthom12345/elo_backend/models"
+	"github.com/paulthom12345/elo-backend/models"
 )
 
 type EndpointLeague struct {
@@ -78,7 +78,7 @@ func createLeague(req *restful.Request, resp *restful.Response) {
 
 func getLeague(req *restful.Request, resp *restful.Response) {
 	id, _ := strconv.ParseUint(req.PathParameter("league-id"), 10, 64)
-	league, err := leagueController.GetById(id)
+	league, err := leagueController.GetById(uint(id))
 
 	if err != nil || league.DeletedAt != nil {
 		resp.WriteErrorString(http.StatusNotFound, "League could not be found")

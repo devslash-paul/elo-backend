@@ -33,6 +33,10 @@ func (wrapper *ExportDB) Migrate(logmode bool) error {
 	wrapper.AutoMigrate(&LeagueConfig{})
 	wrapper.AutoMigrate(&Event{})
 	wrapper.AutoMigrate(&User{})
+	wrapper.AutoMigrate(&Worker{})
+	wrapper.AutoMigrate(&Game{})
+	wrapper.AutoMigrate(&GameAdditionals{})
+
 	// wrapper.AutoMigrate(&EloWorker{})
 	return nil
 }

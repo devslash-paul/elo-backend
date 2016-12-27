@@ -6,7 +6,7 @@ import (
 
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
-	"github.com/paulthom12345/elo_backend/models"
+	"github.com/paulthom12345/elo-backend/models"
 )
 
 type Registerable interface {
@@ -28,6 +28,10 @@ var services = Registerables{
 	WrappedRegisterable{
 		rego:     new(EndpointLeague),
 		endpoint: "/leagues",
+	},
+	WrappedRegisterable{
+		rego:     new(EndpointGame),
+		endpoint: "/league",
 	},
 }
 

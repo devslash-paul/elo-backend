@@ -1,6 +1,6 @@
 package workers
 
-import "github.com/paulthom12345/elo_backend/models"
+import "github.com/paulthom12345/elo-backend/models"
 
 type RunnableWorker interface {
 	Update()
@@ -9,7 +9,7 @@ type RunnableWorker interface {
 type Workers []RunnableWorker
 
 type WorkerManager struct {
-	workers *Workers
+	workers Workers
 }
 
 type WorkerManagerIn interface {
@@ -22,10 +22,10 @@ func BootStrap(db *models.ExportDB) *WorkerManager {
 	workerCT := models.NewWorkerController(db)
 
 	workerRegistry = Workers{
-		NewEloWorker(workerCT.RegisterOrGetWorker("ELOWorker")),
+		NewEloWorker(workerCT.RegisterOrGetWorker("ELOWorker"), db),
 	}
 
-	return *WorkerManager{&workerRegistry}
+	return &WorkerManager{workerRegistry}
 }
 
 func (wm *WorkerManager) AfterEvent() {
