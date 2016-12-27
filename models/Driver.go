@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	// I don't know'
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
