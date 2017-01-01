@@ -6,18 +6,14 @@ import (
 	"strconv"
 
 	restful "github.com/emicklei/go-restful"
-	"github.com/jinzhu/gorm"
 	"github.com/paulthom12345/elo-backend/models"
 )
 
 type EndpointLeague struct {
-	db *gorm.DB
+	db *models.DB
 }
 
-var leagueController *models.LeagueController
-var leagueConfigController *models.LeagueConfigController
-
-func (u *EndpointLeague) register(container *restful.Container, endpoint string, db *models.ExportDB) {
+func (u *EndpointLeague) register(container *restful.Container, endpoint string, db models.DB) {
 	leagueController = models.NewLeagueController(db)
 	leagueConfigController = models.NewLeagueConfigController(db)
 	ws := new(restful.WebService)

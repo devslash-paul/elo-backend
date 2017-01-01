@@ -17,9 +17,7 @@ type errormsg struct {
 	Message string
 }
 
-var userController *models.UserController
-
-func (u *UserEndpoint) register(container *restful.Container, endpoint string, db *models.ExportDB) {
+func (u *UserEndpoint) register(container *restful.Container, endpoint string, db models.DB) {
 	userController = models.NewUserController(db)
 	ws := new(restful.WebService)
 

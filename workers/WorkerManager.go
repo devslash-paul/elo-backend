@@ -18,7 +18,7 @@ type WorkerManagerIn interface {
 
 var workerRegistry Workers
 
-func BootStrap(db *models.ExportDB) *WorkerManager {
+func BootStrap(db models.DB) *WorkerManager {
 	workerCT := models.NewWorkerController(db)
 
 	workerRegistry = Workers{

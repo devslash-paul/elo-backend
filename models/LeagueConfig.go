@@ -17,10 +17,10 @@ type LeagueConfig struct {
 }
 
 type LeagueConfigController struct {
-	db *ExportDB
+	db DB
 }
 
-func NewLeagueConfigController(db *ExportDB) *LeagueConfigController {
+func NewLeagueConfigController(db DB) *LeagueConfigController {
 	return &LeagueConfigController{db}
 }
 

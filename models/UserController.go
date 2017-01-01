@@ -14,10 +14,10 @@ type User struct {
 }
 
 type UserController struct {
-	db *ExportDB
+	db DB
 }
 
-func NewUserController(s *ExportDB) *UserController {
+func NewUserController(s DB) *UserController {
 	return &UserController{s}
 }
 
@@ -41,7 +41,8 @@ func (u *User) Validate() *ModelError {
 // GetUserByID will get a user by a specified user id
 func (u *UserController) GetUserByID(id uint64) (*User, error) {
 	user := &User{}
-	u.db.First(&user, id)
+	println("The id is :", id)
+	u.db.First(user, id)
 
 	if user.ID == 0 {
 		return nil, errors.New("No user has been found with that ID")

@@ -8,14 +8,14 @@ type Worker struct {
 	CreatedAt          *time.Time `xml:"-" json:"-"`
 	UpdatedAt          *time.Time `xml:"-" json:"-"`
 	CurrentEventNumber int
-	Name               string
+	Name               string `gorm:"type:varchar(100);unique"`
 }
 
 type WorkerController struct {
-	db *ExportDB
+	db DB
 }
 
-func NewWorkerController(db *ExportDB) *WorkerController {
+func NewWorkerController(db DB) *WorkerController {
 	return &WorkerController{db}
 }
 
@@ -25,7 +25,7 @@ func (ct *WorkerController) RegisterOrGetWorker(name string) *Worker {
 		CurrentEventNumber: 0,
 	}
 
-	ct.db.Where("name = ?", worker.Name).First(worker)
+	ct.db.Where(worker, "name = ?", worker.Name)
 
 	if worker.ID == 0 {
 		ct.db.Create(&worker)
@@ -36,6 +36,6 @@ func (ct *WorkerController) RegisterOrGetWorker(name string) *Worker {
 
 func (ct *WorkerController) GetEventsForWorker(events []string, worker *Worker) []Event {
 	output := new([]Event)
-	ct.db.Where("EventName in (?) AND EventNumber > ?", events, worker.CurrentEventNumber).Find(&output)
+	ct.db.Where(output, "EventName in (?) AND EventNumber > ?", events, worker.CurrentEventNumber)
 	return *output
 }

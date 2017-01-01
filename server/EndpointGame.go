@@ -8,7 +8,7 @@ import (
 )
 
 type EndpointGame struct {
-	db models.ExportDB
+	db models.DB
 }
 
 type endpointGamePutRequest struct {
@@ -16,28 +16,29 @@ type endpointGamePutRequest struct {
 	Loser  uint64
 }
 
-var gameController *models.GameController
-
-func (ep *EndpointGame) register(container *restful.Container, endpoint string, db *models.ExportDB) {
+func (ep *EndpointGame) register(container *restful.Container, endpoint string, db models.DB) {
 	gameController = models.NewGameController(db)
+	leagueController = models.NewLeagueController(db)
+	userController = models.NewUserController(db)
+
 	ws := new(restful.WebService)
 	ws.
 		Path(endpoint).
 		Consumes(restful.MIME_JSON, restful.MIME_XML).
 		Produces(restful.MIME_JSON, restful.MIME_XML)
 
-	ws.Route(ws.GET("{league-id}/game/{game-id}").To(getGame).
+	ws.Route(ws.GET("/{league-id}/game/{game-id}").To(getGame).
 		Doc("Get a game").
 		Param(ws.PathParameter("league-id", "identifier of the league").DataType("int").Required(true)).
 		Param(ws.PathParameter("game-id", "identifier of the game").DataType("int").Required(true)).
 		Writes(models.Game{}))
 
-	ws.Route(ws.PUT("{league-id}/game").To(createGame).
+	ws.Route(ws.PUT("/{league-id}/game").To(createGame).
 		Doc("Create a new game").
 		Reads(models.Game{}).
 		Writes(models.ModelValidation{}))
 
-	ws.Route(ws.DELETE("{league-id}/game/{game-id}").To(deleteGame).
+	ws.Route(ws.DELETE("/{league-id}/game/{game-id}").To(deleteGame).
 		Doc("Delete a single game").
 		Param(ws.PathParameter("game-id", "Identifier of the game").DataType("int").Required(true)))
 
@@ -46,13 +47,14 @@ func (ep *EndpointGame) register(container *restful.Container, endpoint string, 
 
 func createGame(req *restful.Request, resp *restful.Response) {
 	game := models.Game{}
+
 	var reqGame endpointGamePutRequest
-	req.ReadEntity(&reqGame)
+	err := req.ReadEntity(&reqGame)
+	if err != nil {
+		panic(err)
+	}
 
 	id, _ := strconv.ParseUint(req.PathParameter("league-id"), 10, 64)
-
-	println("REQ GAMES")
-	println(reqGame.Loser)
 
 	league, _ := leagueController.GetById(uint(id))
 	winner, _ := userController.GetUserByID(reqGame.Winner)

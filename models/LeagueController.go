@@ -15,30 +15,33 @@ type League struct {
 }
 
 type LeagueController struct {
-	db *ExportDB
+	db DB
 }
 
-func NewLeagueController(db *ExportDB) *LeagueController {
+func NewLeagueController(db DB) *LeagueController {
 	return &LeagueController{db}
 }
 
 func (ct *LeagueController) GetAllLeagues() *[]League {
 	leagues := new([]League)
-	ct.db.Preload("LeagueConfig").Find(leagues)
+	ct.db.PreloadAllFor(leagues, "LeagueConfig")
 	return leagues
 }
 
 // GetById will get a league by a specified league id
 func (ct *LeagueController) GetById(id uint) (*League, error) {
 	league := League{}
+
+	println("The db looks like: ", ct)
 	ct.db.First(&league, id)
+	println(" Now the league looks like", league.ID)
 
 	if league.ID == 0 {
 		return nil, errors.New("No league has been found with that ID")
 	}
 
 	configs := []LeagueConfig{}
-	ct.db.Model(&league).Related(&configs)
+	ct.db.GetRelatedFor(&league, &configs)
 	league.LeagueConfig = configs
 	return &league, nil
 }

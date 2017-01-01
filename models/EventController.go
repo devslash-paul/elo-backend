@@ -15,10 +15,10 @@ type Event struct {
 }
 
 type EventController struct {
-	db *ExportDB
+	db DB
 }
 
-func NewEventController(db *ExportDB) *EventController {
+func NewEventController(db DB) *EventController {
 	return &EventController{db}
 }
 
@@ -28,6 +28,6 @@ func (ct *EventController) CreateEvent(e *Event) {
 
 func (ct *EventController) GetEventsForWorker(lastRead uint, events []string) []Event {
 	output := new([]Event)
-	ct.db.Where("EventName in (?) AND EventNumber > ?", events, lastRead).Find(&output)
+	ct.db.Where(output, "EventName in (?) AND EventNumber > ?", events, lastRead)
 	return *output
 }

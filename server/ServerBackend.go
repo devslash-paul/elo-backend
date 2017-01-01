@@ -9,8 +9,13 @@ import (
 	"github.com/paulthom12345/elo-backend/models"
 )
 
+var gameController *models.GameController
+var leagueController *models.LeagueController
+var leagueConfigController *models.LeagueConfigController
+var userController *models.UserController
+
 type Registerable interface {
-	register(container *restful.Container, endpoint string, db *models.ExportDB)
+	register(container *restful.Container, endpoint string, db models.DB)
 }
 
 type Registerables []WrappedRegisterable
@@ -35,13 +40,17 @@ var services = Registerables{
 	},
 }
 
-func NewServer(container *restful.Container, db *models.ExportDB) {
+func NewServer(container *restful.Container, db models.DB) {
+	gameController = models.NewGameController(db)
+	leagueController = models.NewLeagueController(db)
+	leagueConfigController = models.NewLeagueConfigController(db)
+	userController = models.NewUserController(db)
 	for _, service := range services {
 		service.rego.register(container, service.endpoint, db)
 	}
 }
 
-func StartServer(db *models.ExportDB) {
+func StartServer(db models.DB) {
 	wsContainer := restful.NewContainer()
 	NewServer(wsContainer, db)
 

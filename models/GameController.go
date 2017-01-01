@@ -3,10 +3,12 @@ package models
 import (
 	"errors"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type GameController struct {
-	db *ExportDB
+	db DB
 }
 
 type Game struct {
@@ -32,7 +34,17 @@ type GameAdditionals struct {
 	value     string
 }
 
-func NewGameController(db *ExportDB) *GameController {
+func (g *Game) AfterCreate(scope *gorm.Scope) error {
+	ev := Event{
+		EventName:      EVENT_GAME_PLAYED,
+		RelatedTable:   "Game",
+		RelatedEventID: g.ID,
+	}
+	scope.DB().Create(&ev)
+	return nil
+}
+
+func NewGameController(db DB) *GameController {
 	return &GameController{db}
 }
 
@@ -48,11 +60,13 @@ func (gc *GameController) GetGameForEvent(event Event) (*Game, error) {
 }
 
 func (gc *GameController) Create(game *Game) {
+	// ensure that a db instance is privately kept for use
+	currentWrapper = gc.db
 	gc.db.Create(game)
 }
 
 func (gc *GameController) GetById(league *League, id uint64) (*Game, error) {
 	game := &Game{}
-	gc.db.Where("League = ?", league.ID).First(game, id)
+	gc.db.PrimaryWithCondidtion(game, id, "League = ?", league.ID)
 	return game, nil
 }

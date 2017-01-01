@@ -14,7 +14,7 @@ type ELOWorker struct {
 	gameC   *models.GameController
 }
 
-func NewEloWorker(worker *models.Worker, db *models.ExportDB) *ELOWorker {
+func NewEloWorker(worker *models.Worker, db models.DB) *ELOWorker {
 	return &ELOWorker{
 		worker,
 		models.NewWorkerController(db),

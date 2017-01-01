@@ -10,9 +10,10 @@ func main() {
 	db, err := models.Connect()
 
 	if err != nil {
-		println("THERE WAS A PROBLEM CONNECTING TO THE `1")
+		println("There was a problem connecting to the database, program will now exit")
 		panic(err.Error())
 	}
+
 	db.Migrate(true)
 	workers.BootStrap(db)
 
