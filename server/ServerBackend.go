@@ -15,7 +15,7 @@ var leagueConfigController *models.LeagueConfigController
 var userController *models.UserController
 
 type Registerable interface {
-	register(container *restful.Container, endpoint string, db models.DB)
+	register(ws *restful.WebService, endpoint string, db models.DB)
 }
 
 type Registerables []WrappedRegisterable
@@ -36,17 +36,35 @@ var services = Registerables{
 	},
 	WrappedRegisterable{
 		rego:     new(EndpointGame),
-		endpoint: "/league",
+		endpoint: "/leagues",
 	},
 }
 
 func NewServer(container *restful.Container, db models.DB) {
+	wsPoints := make(map[string]*restful.WebService)
 	gameController = models.NewGameController(db)
 	leagueController = models.NewLeagueController(db)
 	leagueConfigController = models.NewLeagueConfigController(db)
 	userController = models.NewUserController(db)
+
 	for _, service := range services {
-		service.rego.register(container, service.endpoint, db)
+		var wService *restful.WebService
+		if ws, ok := wsPoints[service.endpoint]; ok {
+			wService = ws
+		} else {
+			wService = &restful.WebService{}
+			wsPoints[service.endpoint] = wService
+			wService.
+				Path(service.endpoint).
+				Consumes(restful.MIME_JSON, restful.MIME_XML).
+				Produces(restful.MIME_JSON, restful.MIME_XML)
+		}
+
+		service.rego.register(wService, service.endpoint, db)
+	}
+
+	for _, endpoint := range wsPoints {
+		container.Add(endpoint)
 	}
 }
 

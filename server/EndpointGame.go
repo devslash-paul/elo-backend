@@ -16,16 +16,10 @@ type endpointGamePutRequest struct {
 	Loser  uint64
 }
 
-func (ep *EndpointGame) register(container *restful.Container, endpoint string, db models.DB) {
+func (ep *EndpointGame) register(ws *restful.WebService, endpoint string, db models.DB) {
 	gameController = models.NewGameController(db)
 	leagueController = models.NewLeagueController(db)
 	userController = models.NewUserController(db)
-
-	ws := new(restful.WebService)
-	ws.
-		Path(endpoint).
-		Consumes(restful.MIME_JSON, restful.MIME_XML).
-		Produces(restful.MIME_JSON, restful.MIME_XML)
 
 	ws.Route(ws.GET("/{league-id}/game/{game-id}").To(getGame).
 		Doc("Get a game").
@@ -41,8 +35,6 @@ func (ep *EndpointGame) register(container *restful.Container, endpoint string, 
 	ws.Route(ws.DELETE("/{league-id}/game/{game-id}").To(deleteGame).
 		Doc("Delete a single game").
 		Param(ws.PathParameter("game-id", "Identifier of the game").DataType("int").Required(true)))
-
-	container.Add(ws)
 }
 
 func createGame(req *restful.Request, resp *restful.Response) {

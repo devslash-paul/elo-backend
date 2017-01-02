@@ -18,7 +18,7 @@ var db *mocks.DB
 
 var currentGame *models.Game
 
-func TestMain(t *testing.T) {
+func TestGameIsCreated(t *testing.T) {
 	epg := new(EndpointGame)
 	wsContainer := restful.NewContainer()
 	db = new(mocks.DB)
@@ -56,13 +56,18 @@ func TestMain(t *testing.T) {
 		i.Winner = currentGame.Winner
 		i.WinnerID = currentGame.WinnerID
 	})
-	epg.register(wsContainer, "/league", db)
+	container := &restful.WebService{}
+	container.
+		Path("/leagues").
+		Consumes(restful.MIME_JSON, restful.MIME_XML).
+		Produces(restful.MIME_JSON, restful.MIME_XML)
+	epg.register(container, "/leagues", db)
+	wsContainer.Add(container)
+
 	server = &http.Server{Addr: ":8888", Handler: wsContainer}
 	go server.ListenAndServe()
-}
 
-func TestGameIsCreated(t *testing.T) {
-	urlstr := "http://localhost:8888/league/1/game"
+	urlstr := "http://localhost:8888/leagues/1/game"
 	client := &http.Client{}
 	jsonStr := []byte(`{
 		"Winner": 1,
@@ -78,7 +83,7 @@ func TestGameIsCreated(t *testing.T) {
 	}
 
 	if resp.StatusCode != 200 {
-		t.Fatalf("Error when attempting to create the game")
+		t.Fatalf("Error when attempting to create the game", resp)
 	}
 
 	// Check the game
@@ -87,7 +92,7 @@ func TestGameIsCreated(t *testing.T) {
 	}
 
 	// try get that game again
-	gettsr := "http://localhost:8888/league/1/game/1"
+	gettsr := "http://localhost:8888/leagues/1/game/1"
 	resp, _ = http.Get(gettsr)
 	if resp.StatusCode != 200 {
 		t.Errorf("Status code should be 200, was %d", resp.StatusCode)

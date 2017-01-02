@@ -17,14 +17,8 @@ type errormsg struct {
 	Message string
 }
 
-func (u *UserEndpoint) register(container *restful.Container, endpoint string, db models.DB) {
+func (u *UserEndpoint) register(ws *restful.WebService, endpoint string, db models.DB) {
 	userController = models.NewUserController(db)
-	ws := new(restful.WebService)
-
-	ws.
-		Path(endpoint).
-		Consumes(restful.MIME_JSON, restful.MIME_XML).
-		Produces(restful.MIME_JSON, restful.MIME_XML)
 
 	ws.Route(ws.GET("/{user-id}").To(getUser).
 		Doc("Get a user").
@@ -39,8 +33,6 @@ func (u *UserEndpoint) register(container *restful.Container, endpoint string, d
 	ws.Route(ws.DELETE("/{user-id}").To(deleteUser).
 		Doc("Delete a single user").
 		Param(ws.PathParameter("user-id", "Identifier of the user").DataType("int").Required(true)))
-
-	container.Add(ws)
 }
 
 func createUser(req *restful.Request, resp *restful.Response) {

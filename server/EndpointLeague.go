@@ -13,15 +13,9 @@ type EndpointLeague struct {
 	db *models.DB
 }
 
-func (u *EndpointLeague) register(container *restful.Container, endpoint string, db models.DB) {
+func (u *EndpointLeague) register(ws *restful.WebService, endpoint string, db models.DB) {
 	leagueController = models.NewLeagueController(db)
 	leagueConfigController = models.NewLeagueConfigController(db)
-	ws := new(restful.WebService)
-
-	ws.
-		Path(endpoint).
-		Consumes(restful.MIME_JSON, restful.MIME_XML).
-		Produces(restful.MIME_JSON, restful.MIME_XML)
 
 	ws.Route(ws.GET("/").To(getLeagues))
 
@@ -35,10 +29,10 @@ func (u *EndpointLeague) register(container *restful.Container, endpoint string,
 		Operation("updateUser").
 		Reads(models.League{})) // from the request
 
-	ws.Route(ws.PUT("/{league-id}/config").To(createConfig)).
-		Doc("Create a new league config. Fail if setting exists already")
-
-	container.Add(ws)
+	ws.Route(ws.PUT("/{league-id}/config").To(createConfig).
+		Doc("Create a new league config. Fail if setting exists already").
+		Reads(models.LeagueConfig{}).
+		Param(ws.PathParameter("league-id", "identifier of the league").DataType("int").Required(true)))
 }
 
 func getLeagues(req *restful.Request, resp *restful.Response) {
